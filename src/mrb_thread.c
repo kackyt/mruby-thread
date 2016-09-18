@@ -531,15 +531,6 @@ mrb_queue_unlock(mrb_state* mrb, mrb_value self) {
 }
 
 static mrb_value
-mrb_queue_clear(mrb_state* mrb, mrb_value self) {
-  mrb_queue_context* context = DATA_PTR(self);
-  mrb_queue_lock(mrb, self);
-  mrb_ary_clear(mrb, context->queue);
-  mrb_queue_unlock(mrb, self);
-  return mrb_nil_value();
-}
-
-static mrb_value
 mrb_queue_push(mrb_state* mrb, mrb_value self) {
   mrb_value arg;
   mrb_queue_context* context = DATA_PTR(self);
@@ -596,12 +587,6 @@ mrb_queue_shift(mrb_state* mrb, mrb_value self) {
 }
 
 static mrb_value
-mrb_queue_num_waiting(mrb_state* mrb, mrb_value self) {
-  /* TODO: multiple waiting */
-  return mrb_fixnum_value(0);
-}
-
-static mrb_value
 mrb_queue_empty_p(mrb_state* mrb, mrb_value self) {
   mrb_bool ret;
   mrb_queue_context* context = DATA_PTR(self);
@@ -648,7 +633,6 @@ mrb_mruby_thread_gem_init(mrb_state* mrb) {
   _class_queue = mrb_define_class(mrb, "Queue", mrb->object_class);
   MRB_SET_INSTANCE_TT(_class_queue, MRB_TT_DATA);
   mrb_define_method(mrb, _class_queue, "initialize", mrb_queue_init, MRB_ARGS_NONE());
-  mrb_define_method(mrb, _class_queue, "clear", mrb_queue_clear, MRB_ARGS_NONE());
   mrb_define_method(mrb, _class_queue, "push", mrb_queue_push, MRB_ARGS_NONE());
   mrb_define_alias(mrb, _class_queue, "<<", "push");
   mrb_define_method(mrb, _class_queue, "unshift", mrb_queue_unshift, MRB_ARGS_NONE());
@@ -657,7 +641,6 @@ mrb_mruby_thread_gem_init(mrb_state* mrb) {
   mrb_define_alias(mrb, _class_queue, "deq", "pop");
   mrb_define_method(mrb, _class_queue, "shift", mrb_queue_shift, MRB_ARGS_OPT(1));
   mrb_define_method(mrb, _class_queue, "size", mrb_queue_size, MRB_ARGS_NONE());
-  mrb_define_method(mrb, _class_queue, "num_waiting", mrb_queue_num_waiting, MRB_ARGS_NONE());
   mrb_define_method(mrb, _class_queue, "empty?", mrb_queue_empty_p, MRB_ARGS_NONE());
 }
 
